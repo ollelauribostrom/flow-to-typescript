@@ -2,10 +2,7 @@ import { parse } from '@babel/babylon'
 import generate from '@babel/generator'
 import traverse, { Node, Visitor } from '@babel/traverse'
 import { File } from '@babel/types'
-import { sync } from 'glob'
-import { dropWhile, pullAt } from 'lodash'
-import { EOL } from 'os'
-import { relative, resolve } from 'path'
+import { pullAt } from 'lodash'
 
 type Warning = [string, string, number, number]
 type Rule = (warnings: Warning[]) => Visitor<Node>
@@ -29,16 +26,11 @@ export async function compile(code: string, filename: string) {
 
   warnings.forEach(([message, issueURL, line, column]) => {
     console.log(
-      `Warning: ${message} (at ${relative(
-        __dirname,
-        filename
-      )}: line ${line}, column ${column}). See ${issueURL}`
+      `Warning: ${message} (at ${filename}: line ${line}, column ${column}). See ${issueURL}`
     )
   })
 
-  return addTrailingSpace(
-    trimLeadingNewlines(generate(stripAtFlowAnnotation(ast)).code)
-  )
+  return generate(stripAtFlowAnnotation(ast)).code;
 }
 
 /**
@@ -46,9 +38,7 @@ export async function compile(code: string, filename: string) {
  */
 export async function convert<T extends Node>(ast: T): Promise<[Warning[], T]> {
   // load rules directory
-  await Promise.all(
-    sync(resolve(__dirname, './rules/*.js')).map(_ => import(_))
-  )
+  await import('./rules/index')
 
   let warnings: Warning[] = []
   rules.forEach(visitor => traverse(ast, visitor(warnings)))
@@ -67,13 +57,13 @@ function stripAtFlowAnnotation(ast: File): File {
   return ast
 }
 
-function addTrailingSpace(file: string): string {
-  if (file.endsWith(EOL)) {
-    return file
-  }
-  return file + EOL
-}
+// function addTrailingSpace(file: string): string {
+//   if (file.endsWith(EOL)) {
+//     return file
+//   }
+//   return file + EOL
+// }
 
-function trimLeadingNewlines(file: string): string {
-  return dropWhile(file.split(EOL), _ => !_).join(EOL)
-}
+// function trimLeadingNewlines(file: string): string {
+//   return dropWhile(file.split(EOL), _ => !_).join(EOL)
+// }
