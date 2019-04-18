@@ -17,6 +17,7 @@
     "target": "es2015"
   },
   "exclude": [
-    "**/*.js.flow"
+    "**/*.js.flow",
+    "dist/**"
   ]
 }
