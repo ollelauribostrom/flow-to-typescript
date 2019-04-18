@@ -4,8 +4,8 @@ import traverse, { Node, Visitor } from '@babel/traverse'
 import { File } from '@babel/types'
 import { pullAt } from 'lodash'
 
-type Warning = [string, string, number, number]
-type Rule = (warnings: Warning[]) => Visitor<Node>
+export type Warning = [string, string, number, number]
+export type Rule = (warnings: Warning[]) => Visitor<Node>
 
 let rules = new Map<string, Rule>()
 

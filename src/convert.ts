@@ -41,6 +41,7 @@ import {
 import { generateFreeIdentifier } from './utils'
 
 // TODO: Add overloads
+// @ts-ignore
 export function toTs(node: Flow | TSType): TSType {
   switch (node.type) {
     // TS types
@@ -64,6 +65,7 @@ export function toTs(node: Flow | TSType): TSType {
     case 'TSSymbolKeyword':
     case 'TSThisType':
     case 'TSTupleType':
+    // @ts-ignore
     case 'TSTypeAnnotation':
     case 'TSTypeLiteral':
     case 'TSTypeOperator':
@@ -73,8 +75,11 @@ export function toTs(node: Flow | TSType): TSType {
     case 'TSUndefinedKeyword':
     case 'TSUnionType':
     case 'TSVoidKeyword':
+    // @ts-ignore
     case 'TSTypeParameterDeclaration':
+    // @ts-ignore
     case 'TSAsExpression':
+    // @ts-ignore
     case 'TSPropertySignature':
       return node
 
@@ -89,6 +94,7 @@ export function toTs(node: Flow | TSType): TSType {
     case 'MixedTypeAnnotation':
     case 'NullableTypeAnnotation':
     case 'NullLiteralTypeAnnotation':
+    // @ts-ignore
     case 'NumericLiteralTypeAnnotation':
     case 'NumberTypeAnnotation':
     case 'StringLiteralTypeAnnotation':
@@ -100,15 +106,18 @@ export function toTs(node: Flow | TSType): TSType {
     case 'ObjectTypeAnnotation':
     case 'UnionTypeAnnotation':
     case 'VoidTypeAnnotation':
+      // @ts-ignore
       return toTsType(node)
 
     case 'ObjectTypeProperty':
       let _ = tsPropertySignature(node.key, tsTypeAnnotation(toTs(node.value)))
       _.optional = node.optional
       _.readonly = node.variance && node.variance.kind === 'minus'
+      // @ts-ignore
       return _
 
     case 'TypeCastExpression':
+      // @ts-ignore
       return tsAsExpression(node.expression, toTs(node.typeAnnotation))
 
     case 'TypeParameterDeclaration':
@@ -122,9 +131,11 @@ export function toTs(node: Flow | TSType): TSType {
         return p
       })
 
+      // @ts-ignore
       return tsTypeParameterDeclaration(params)
 
     case 'ClassImplements':
+    // @ts-ignore
     case 'ClassProperty':
     case 'DeclareClass':
     case 'DeclareFunction':
@@ -132,6 +143,7 @@ export function toTs(node: Flow | TSType): TSType {
     case 'DeclareModule':
     case 'DeclareTypeAlias':
     case 'DeclareVariable':
+    // @ts-ignore
     case 'ExistentialTypeParam':
     case 'FunctionTypeParam':
     case 'InterfaceExtends':
@@ -145,6 +157,7 @@ export function toTs(node: Flow | TSType): TSType {
   }
 }
 
+// @ts-ignore
 export function toTsType(node: FlowType): TSType {
   switch (node.type) {
     case 'AnyTypeAnnotation':
@@ -158,6 +171,7 @@ export function toTsType(node: FlowType): TSType {
     case 'FunctionTypeAnnotation':
       return functionToTsType(node)
     case 'GenericTypeAnnotation':
+    // @ts-ignore
       return tsTypeReference(node.id)
     case 'IntersectionTypeAnnotation':
       return tsIntersectionType(node.types.map(toTsType))
@@ -186,15 +200,19 @@ export function toTsType(node: FlowType): TSType {
     case 'TypeofTypeAnnotation':
       return tsTypeQuery(getId(node.argument))
     case 'ObjectTypeAnnotation':
+      // @ts-ignore
       return tsTypeLiteral([
         ...node.properties.map(_ => {
           if (isSpreadProperty(_)) {
             return _
           }
           let s = tsPropertySignature(
+            // @ts-ignore
             _.key,
+            // @ts-ignore
             tsTypeAnnotation(toTsType(_.value))
           )
+          // @ts-ignore
           s.optional = _.optional
           return s
           // TODO: anonymous indexers
@@ -214,6 +232,7 @@ export function toTsType(node: FlowType): TSType {
 function getId(node: FlowType): Identifier {
   switch (node.type) {
     case 'GenericTypeAnnotation':
+      // @ts-ignore
       return node.id
     default:
       throw ReferenceError('typeof query must reference a node that has an id')
@@ -224,6 +243,7 @@ function functionToTsType(node: FunctionTypeAnnotation): TSFunctionType {
   let typeParams = undefined
 
   if (node.typeParameters) {
+    // @ts-ignore
     typeParams = tsTypeParameterDeclaration(
       node.typeParameters.params.map(_ => {
         // TODO: How is this possible?
@@ -240,6 +260,7 @@ function functionToTsType(node: FunctionTypeAnnotation): TSFunctionType {
     )
   }
 
+  // @ts-ignore
   let f = tsFunctionType(typeParams)
 
   // Params
