@@ -12,8 +12,8 @@ type Rule = (warnings: Warning[]) => Visitor<Node>
 
 let rules = new Map<string, Rule>()
 
-export function addRule(ruleName: string, rule: Rule) {
-  if (rules.has(ruleName)) {
+export function addRule(ruleName: string, rule: Rule, overwrite?: boolean) {
+  if (rules.has(ruleName) && !overwrite) {
     throw `A rule with the name "${ruleName}" is already defined`
   }
   rules.set(ruleName, rule)
