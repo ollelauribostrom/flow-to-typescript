@@ -2,10 +2,10 @@
   "name": "flow-to-typescript",
   "description": "Compile Flow to TypeScript",
   "version": "0.0.1",
-  "main": "./dist/src/index.js",
-  "types": "./dist/src/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "bin": {
-    "flow2ts": "dist/src/cli.js"
+    "flow2ts": "./dist/cli.js"
   },
   "repository": "git@github.com:bcherny/flow-to-typescript.git",
   "author": "Boris Cherny <bcherny@fb.com>",
